@@ -2,13 +2,13 @@ program vktest;
 
 uses
   Vcl.Forms,
-  vktestform in 'vktestform.pas' {Form1};
+  vktestform in 'vktestform.pas' {MainForm};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
