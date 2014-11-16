@@ -21,6 +21,7 @@ object MainForm: TMainForm
     Height = 25
     Caption = 'Login'
     TabOrder = 0
+    OnClick = btLoginClick
   end
   object eAppId: TEdit
     Left = 8
@@ -35,5 +36,12 @@ object MainForm: TMainForm
     Width = 321
     Height = 21
     TabOrder = 2
+  end
+  object eAccessToken: TEdit
+    Left = 8
+    Top = 66
+    Width = 448
+    Height = 21
+    TabOrder = 3
   end
 end
