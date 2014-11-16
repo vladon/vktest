@@ -102,3 +102,6 @@ $RECYCLE.BIN/
 
 # Castalia stat
 *.stat
+
+# keys.ini - it's a public repository :)
+keys.ini
