@@ -40,8 +40,42 @@ object MainForm: TMainForm
   object eAccessToken: TEdit
     Left = 8
     Top = 66
-    Width = 448
+    Width = 793
     Height = 21
     TabOrder = 3
+  end
+  object btSetOffline: TButton
+    Left = 8
+    Top = 136
+    Width = 75
+    Height = 25
+    Caption = 'Set Offline'
+    TabOrder = 4
+    OnClick = btSetOfflineClick
+  end
+  object RESTClient1: TRESTClient
+    Authenticator = OAuth2Authenticator1
+    Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    BaseURL = 'https://api.vk.com/method'
+    Params = <>
+    HandleRedirects = True
+    Left = 368
+    Top = 160
+  end
+  object RESTRequest1: TRESTRequest
+    Client = RESTClient1
+    Params = <>
+    Response = RESTResponse1
+    SynchronizedEvents = False
+    Left = 376
+    Top = 224
+  end
+  object RESTResponse1: TRESTResponse
+    Left = 464
+    Top = 224
+  end
+  object OAuth2Authenticator1: TOAuth2Authenticator
+    Left = 368
+    Top = 104
   end
 end
