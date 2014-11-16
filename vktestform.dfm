@@ -11,14 +11,29 @@ object MainForm: TMainForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object btLogin: TButton
     Left = 8
-    Top = 8
+    Top = 35
     Width = 75
     Height = 25
     Caption = 'Login'
     TabOrder = 0
+  end
+  object eAppId: TEdit
+    Left = 8
+    Top = 8
+    Width = 121
+    Height = 21
+    TabOrder = 1
+  end
+  object eSecretKey: TEdit
+    Left = 135
+    Top = 8
+    Width = 321
+    Height = 21
+    TabOrder = 2
   end
 end
