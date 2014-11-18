@@ -59,23 +59,23 @@ object MainForm: TMainForm
     BaseURL = 'https://api.vk.com/method'
     Params = <>
     HandleRedirects = True
-    Left = 368
-    Top = 160
+    Left = 576
+    Top = 8
   end
   object RESTRequest1: TRESTRequest
     Client = RESTClient1
     Params = <>
     Response = RESTResponse1
     SynchronizedEvents = False
-    Left = 376
-    Top = 224
+    Left = 656
+    Top = 8
   end
   object RESTResponse1: TRESTResponse
-    Left = 464
-    Top = 224
+    Left = 744
+    Top = 8
   end
   object OAuth2Authenticator1: TOAuth2Authenticator
-    Left = 368
-    Top = 104
+    Left = 472
+    Top = 8
   end
 end

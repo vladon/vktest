@@ -53,14 +53,13 @@ const
   '%s&redirect_uri=%s&display=%s&v=%s&response_type=token';
   vkAuthEndpoint = 'https://oauth.vk.com/authorize';
 
-  vkDefaultScope = 'notify,wall,status,wall,messages,stats,offline';
+  vkDefaultScope = 'notify,wall,status,wall,messages,stats,offline,photos';
   vkDefaultRedirectUri = 'https://oauth.vk.com/blank.html';
   vkDefaultDisplay = 'popup';
   vkDefaultVersion = '5.26';
 
 procedure TMainForm.btLoginClick(Sender: TObject);
 var
-  vkAuthUrl: string;
   vkReturnUrl: string;
   accessToken: string;
   indexOfAccessToken: Integer;
