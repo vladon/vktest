@@ -3,7 +3,8 @@ program vktest;
 uses
   Vcl.Forms,
   vktestform in 'vktestform.pas' {MainForm},
-  browserform in 'browserform.pas' {WebBrowserForm};
+  browserform in 'browserform.pas' {WebBrowserForm},
+  VkApi in 'VkApi.pas';
 
 {$R *.res}
 
