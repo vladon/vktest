@@ -3,7 +3,7 @@ unit VkApi;
 interface
 
 uses
-  System.SysUtils, REST.Authenticator.OAuth, REST.Client, REST.Types, REST.Utils;
+  System.SysUtils, REST.Authenticator.OAuth, REST.Client, REST.Types, REST.Utils, System.Math;
 
 // VK API constants
 const
@@ -83,6 +83,10 @@ type
       constructor Create(const AAppId: string; const ASecretKey: string;
          const AAccessToken: string);
       destructor Destroy; override;
+
+      function WallPost(const AOwnerId: Integer; const AMessage: string):
+        Integer;
+
   end;
 
 implementation
@@ -166,6 +170,21 @@ procedure TVkApi.SetScope(const Value: string);
 begin
   if FVkAuthenticator <> nil then
     FVkAuthenticator.Scope := Value;
+end;
+
+function TVkApi.WallPost(const AOwnerId: Integer;
+  const AMessage: string): Integer;
+begin
+  FRESTRequest.Resource := 'wall.post';
+  FRESTRequest.Method := TRESTRequestMethod.rmGET;
+  FRESTRequest.Params.Clear;
+  FRESTRequest.Params.AddItem('owner_id', IntToStr(AOwnerId));
+  FRESTRequest.Params.AddItem('friends_only', '0');
+  FRESTRequest.Params.AddItem('from_group', '1');
+  FRESTRequest.Params.AddItem('message', AMessage);
+  FRESTRequest.Execute;
+
+  Result := 0;
 end;
 
 { TVkAuthenticator }

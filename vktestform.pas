@@ -23,6 +23,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btLoginClick(Sender: TObject);
     procedure btSetOfflineClick(Sender: TObject);
+    procedure bPostTextToGroupClick(Sender: TObject);
   private
     { Private declarations }
     AppId: string;
@@ -60,6 +61,11 @@ const
 //  vkDefaultRedirectUri = 'https://oauth.vk.com/blank.html';
   vkDefaultDisplay = 'popup';
   vkDefaultVersion = '5.26';
+
+procedure TMainForm.bPostTextToGroupClick(Sender: TObject);
+begin
+  FVKApi.WallPost(StrToInt(eGroupId.Text), ePostText.Text);
+end;
 
 procedure TMainForm.btLoginClick(Sender: TObject);
 var

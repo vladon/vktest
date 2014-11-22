@@ -88,5 +88,6 @@ object MainForm: TMainForm
     Height = 25
     Caption = 'Post Text To Group'
     TabOrder = 7
+    OnClick = bPostTextToGroupClick
   end
 end
