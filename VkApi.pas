@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, REST.Authenticator.OAuth, REST.Client, REST.Types,
-  REST.Utils, System.Math, System.Types, System.StrUtils;
+  REST.Utils, System.Math, System.Types, System.StrUtils, System.JSON;
 
 
 // VK API constants
@@ -63,7 +63,7 @@ type
 { TVkPermissions }
 
 const
-  VKAPI_PERMISSION_NOTIFY         = $000001; //  0       1
+  VKAPI_PERMISSION_NOTIFY         = $000001; //  0     1
   VKAPI_PERMISSION_FRIENDS        = $000002; //  1     2
   VKAPI_PERMISSION_PHOTOS         = $000004; //  2     4
   VKAPI_PERMISSION_AUDIO          = $000008; //  3     8
@@ -133,6 +133,7 @@ type
       FRESTClient: TRESTClient;
       FRESTRequest: TRESTRequest;
       FRESTResponse: TRESTResponse;
+      FAppPermissions: Integer;
 
       function GetScope: string;
       procedure SetScope(const Value: string);
@@ -157,6 +158,10 @@ type
          const AAccessToken: string);
       destructor Destroy; override;
 
+      // account methods
+      function AccountGetAppPermissions(const AUserId: Integer = 0): Integer;
+
+      // wall methods
       function WallPost(const AOwnerId: Integer; const AMessage: string):
         string;
 
@@ -165,6 +170,28 @@ type
 implementation
 
 { TVkApi }
+
+function TVkApi.AccountGetAppPermissions(const AUserId: Integer = 0): Integer;
+begin
+  FRESTRequest.Resource := 'account.getAppPermissions';
+  FRESTRequest.Method := TRESTRequestMethod.rmGET;
+  FRESTRequest.Params.Clear;
+  if AUserId <> 0 then
+  begin
+    FRESTRequest.Params.AddItem('user_id', IntToStr(AUserId), pkGETorPOST, [
+       poDoNotEncode]);
+  end;
+  FRESTRequest.Params.AddItem('v', VkApiVersionToString(Self.ApiVersion),
+     pkGETorPOST, [poDoNotEncode]);
+  FRESTRequest.Execute;
+
+  if not TryStrToInt((FRESTResponse.JSONValue as TJSONObject).GetValue(
+     'response').ToString, Result) then
+     Result := 0;
+
+  if AUserId = 0 then
+    FAppPermissions := Result;
+end;
 
 constructor TVkApi.Create(const AAppId: string; const ASecretKey: string;
    const AAccessToken: string);
@@ -205,6 +232,8 @@ begin
   FRESTRequest.HandleRedirects := True;
   FRESTRequest.Response := FRESTResponse;
   FRESTRequest.Timeout := VKAPI_TIMEOUT;
+
+  Self.AccountGetAppPermissions();
 end;
 
 destructor TVkApi.Destroy;

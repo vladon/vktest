@@ -21,10 +21,12 @@ type
     Label2: TLabel;
     bPostTextToGroup: TButton;
     Memo1: TMemo;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure btLoginClick(Sender: TObject);
     procedure btSetOfflineClick(Sender: TObject);
     procedure bPostTextToGroupClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
     AppId: string;
@@ -105,6 +107,11 @@ end;
 procedure TMainForm.btSetOfflineClick(Sender: TObject);
 begin
 //  RESTRequest1.Resource := 'account.setOffline';
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+begin
+  Memo1.Lines.Add(IntToStr(FVKApi.AccountGetAppPermissions()));
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);

@@ -97,4 +97,13 @@ object MainForm: TMainForm
     Height = 284
     TabOrder = 8
   end
+  object Button1: TButton
+    Left = 8
+    Top = 266
+    Width = 173
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 9
+    OnClick = Button1Click
+  end
 end
