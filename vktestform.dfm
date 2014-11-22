@@ -90,4 +90,11 @@ object MainForm: TMainForm
     TabOrder = 7
     OnClick = bPostTextToGroupClick
   end
+  object Memo1: TMemo
+    Left = 187
+    Top = 181
+    Width = 640
+    Height = 284
+    TabOrder = 8
+  end
 end

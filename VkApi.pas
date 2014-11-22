@@ -3,7 +3,9 @@ unit VkApi;
 interface
 
 uses
-  System.SysUtils, REST.Authenticator.OAuth, REST.Client, REST.Types, REST.Utils, System.Math;
+  System.SysUtils, REST.Authenticator.OAuth, REST.Client, REST.Types,
+  REST.Utils, System.Math, System.Types, System.StrUtils;
+
 
 // VK API constants
 const
@@ -58,6 +60,69 @@ type
       function AuthorizationRequestURI: string;
   end;
 
+{ TVkPermissions }
+
+const
+  VKAPI_PERMISSION_NOTIFY         = $000001; //  0       1
+  VKAPI_PERMISSION_FRIENDS        = $000002; //  1     2
+  VKAPI_PERMISSION_PHOTOS         = $000004; //  2     4
+  VKAPI_PERMISSION_AUDIO          = $000008; //  3     8
+  VKAPI_PERMISSION_VIDEO          = $000010; //  4    16
+  VKAPI_PERMISSION_OFFERS         = $000020; //  5    32, obsolete
+  VKAPI_PERMISSION_QUESTIONS      = $000040; //  6    64, obsolete
+  VKAPI_PERMISSION_PAGES          = $000080; //  7   128
+  VKAPI_PERMISSION_LEFTMENULINK   = $000100; //  8   256
+                                             //  9   512 - none
+  VKAPI_PERMISSION_STATUS         = $000400; // 10   1024
+  VKAPI_PERMISSION_NOTES          = $000800; // 11   2048
+  VKAPI_PERMISSION_MESSAGES       = $001000; // 12   4096
+  VKAPI_PERMISSION_WALL           = $002000; // 13   8192
+                                             // 14  16384 - none
+  VKAPI_PERMISSION_ADS            = $008000; // 15  32768
+  VKAPI_PERMISSION_OFFLINE        = $010000; // 16  65536
+  VKAPI_PERMISSION_DOCS           = $020000; // 17 131072
+  VKAPI_PERMISSION_GROUPS         = $040000; // 18 262144
+  VKAPI_PERMISSION_NOTIFICATIONS  = $080000; // 19 524288
+  VKAPI_PERMISSION_STATS          = $100000; // 20 1048576
+                                             // 21 2097152 - none
+  VKAPI_PERMISSION_EMAIL          = $400000; // 22 4194304
+
+// VKAPI_PERMISSION_NOHTTPS - ?
+
+type
+  TVkPermission = (
+    vkpNotify,
+    vkpFriends,
+    vkpPhotos,
+    vkpAudio,
+    vkpVideo,
+    vkpOffers,
+    vkpQuestions,
+    vkpPages,
+    vkpLeftMenuLink,
+    vkpStatus,
+    vkpNotes,
+    vkpMessages,
+    vkpWall,
+    vkpAds,
+    vkpOffline,
+    vkpDocs,
+    vkpGroups,
+    vkpNotifications,
+    vkpStats,
+    vkpEmail,
+    vkpNoHttps
+  );
+
+  TVkPermissions = set of TVkPermission;
+
+function VkPermissionsToStr(const AVkPermissions: TVkPermissions): string;
+function VkPermissionsToInt(const AVkPermissions: TVkPermissions): Integer;
+function StrToVkPermissions(const AStr: string): TVkPermissions;
+function IntToVkPermissions(const AInt: Integer): TVkPermissions;
+
+{ TVkApi class }
+
 type
   TVkApi = class
     private
@@ -93,7 +158,7 @@ type
       destructor Destroy; override;
 
       function WallPost(const AOwnerId: Integer; const AMessage: string):
-        Integer;
+        string;
 
   end;
 
@@ -203,18 +268,23 @@ begin
 end;
 
 function TVkApi.WallPost(const AOwnerId: Integer;
-  const AMessage: string): Integer;
+  const AMessage: string): string;
 begin
   FRESTRequest.Resource := 'wall.post';
   FRESTRequest.Method := TRESTRequestMethod.rmGET;
   FRESTRequest.Params.Clear;
-  FRESTRequest.Params.AddItem('owner_id', IntToStr(AOwnerId));
-  FRESTRequest.Params.AddItem('friends_only', '0');
-  FRESTRequest.Params.AddItem('from_group', '1');
-  FRESTRequest.Params.AddItem('message', AMessage);
+  FRESTRequest.Params.AddItem('owner_id', IntToStr(AOwnerId), pkGETorPOST, [poDoNotEncode]);
+  FRESTRequest.Params.AddItem('friends_only', '0', pkGETorPOST, [poDoNotEncode]);
+  FRESTRequest.Params.AddItem('from_group', '1', pkGETorPOST, [poDoNotEncode]);
+  FRESTRequest.Params.AddItem('message', AMessage, pkGETorPOST, [poDoNotEncode]);
+  FRESTRequest.Params.AddItem('v', VkApiVersionToString(Self.ApiVersion),
+     pkGETorPOST, [poDoNotEncode]);
   FRESTRequest.Execute;
 
-  Result := 0;
+  if FRESTRequest.Response.StatusCode = 200 then
+    Result := FRESTResponse.JSONText
+  else
+    Result := FRESTResponse.ErrorMessage;
 end;
 
 { TVkAuthenticator }
@@ -320,6 +390,295 @@ begin
   else
     Result := '';
   end;
+end;
+
+function VkPermissionsToStr(const AVkPermissions: TVkPermissions): string;
+begin
+  Result := '';
+
+  if vkpNotify in AVkPermissions then
+    Result := Result + 'notify,';
+
+  if vkpFriends in AVkPermissions then
+    Result := Result + 'friends,';
+
+  if vkpPhotos in AVkPermissions then
+    Result := Result + 'photos,';
+
+  if vkpAudio in AVkPermissions then
+    Result := Result + 'audio,';
+
+  if vkpVideo in AVkPermissions then
+    Result := Result + 'video,';
+
+  if vkpOffers in AVkPermissions then
+    Result := Result + 'offers,';
+
+  if vkpQuestions in AVkPermissions then
+    Result := Result + 'questions,';
+
+  if vkpPages in AVkPermissions then
+    Result := Result + 'pages,';
+
+  if vkpLeftMenuLink in AVkPermissions then
+  begin
+    // no string for this
+  end;
+
+  if vkpStatus in AVkPermissions then
+    Result := Result + 'status,';
+
+  if vkpNotes in AVkPermissions then
+    Result := Result + 'notes,';
+
+  if vkpMessages in AVkPermissions then
+    Result := Result + 'messages,';
+
+  if vkpWall in AVkPermissions then
+    Result := Result + 'wall,';
+
+  if vkpAds in AVkPermissions then
+    Result := Result + 'ads,';
+
+  if vkpOffline in AVkPermissions then
+    Result := Result + 'offline,';
+
+  if vkpDocs in AVkPermissions then
+    Result := Result + 'docs,';
+
+  if vkpGroups in AVkPermissions then
+    Result := Result + 'groups,';
+
+  if vkpNotifications in AVkPermissions then
+    Result := Result + 'notifications,';
+
+  if vkpStats in AVkPermissions then
+    Result := Result + 'stats,';
+
+  if vkpEmail in AVkPermissions then
+    Result := Result + 'email,';
+
+  if vkpNoHttps in AVkPermissions then
+    Result := Result + 'nohttps';
+
+  // remove first and last commas
+  Result := Result.Trim([',']);
+
+end;
+
+function VkPermissionsToInt(const AVkPermissions: TVkPermissions): Integer;
+begin
+  Result := 0;
+
+  if vkpNotify in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_NOTIFY;
+
+  if vkpFriends in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_FRIENDS;
+
+  if vkpPhotos in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_PHOTOS;
+
+  if vkpAudio in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_AUDIO;
+
+  if vkpVideo in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_VIDEO;
+
+  if vkpOffers in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_OFFERS;
+
+  if vkpQuestions in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_QUESTIONS;
+
+  if vkpPages in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_PAGES;
+
+  if vkpLeftMenuLink in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_LEFTMENULINK;
+
+  if vkpStatus in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_STATUS;
+
+  if vkpNotes in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_NOTES;
+
+  if vkpMessages in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_MESSAGES;
+
+  if vkpWall in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_WALL;
+
+  if vkpAds in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_ADS;
+
+  if vkpOffline in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_OFFLINE;
+
+  if vkpDocs in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_DOCS;
+
+  if vkpGroups in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_GROUPS;
+
+  if vkpNotifications in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_NOTIFICATIONS;
+
+  if vkpStats in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_STATS;
+
+  if vkpEmail in AVkPermissions then
+    Result := Result or VKAPI_PERMISSION_EMAIL;
+
+  if vkpNoHttps in AVkPermissions then
+  begin
+    // value not defined
+    // Result := Result or VKAPI_PERMISSION_NOHTTPS;
+  end;
+end;
+
+function StrToVkPermissions(const AStr: string): TVkPermissions;
+var
+  sda: TStringDynArray;
+  i: Integer;
+begin
+  Result := [];
+
+  sda := SplitString(AStr, ',');
+  for i := Low(sda) to High(sda) do
+  begin
+    if SameText(sda[i], 'NOTIFY') then
+      Include(Result, vkpNotify);
+
+    if SameText(sda[i], 'FRIENDS') then
+      Include(Result, vkpFriends);
+
+    if SameText(sda[i], 'PHOTOS') then
+      Include(Result, vkpPhotos);
+
+    if SameText(sda[i], 'AUDIO') then
+      Include(Result, vkpAudio);
+
+    if SameText(sda[i], 'VIDEO') then
+      Include(Result, vkpVideo);
+
+    if SameText(sda[i], 'OFFERS') then
+      Include(Result, vkpOffers);
+
+    if SameText(sda[i], 'QUESTIONS') then
+      Include(Result, vkpQuestions);
+
+    if SameText(sda[i], 'PAGES') then
+      Include(Result, vkpPages);
+
+    if SameText(sda[i], 'LEFTMENULINK') then
+      Include(Result, vkpLeftMenuLink);
+
+    if SameText(sda[i], 'STATUS') then
+      Include(Result, vkpStatus);
+
+    if SameText(sda[i], 'NOTES') then
+      Include(Result, vkpNotes);
+
+    if SameText(sda[i], 'MESSAGES') then
+      Include(Result, vkpMessages);
+
+    if SameText(sda[i], 'WALL') then
+      Include(Result, vkpWall);
+
+    if SameText(sda[i], 'ADS') then
+      Include(Result, vkpAds);
+
+    if SameText(sda[i], 'OFFLINE') then
+      Include(Result, vkpOffline);
+
+    if SameText(sda[i], 'DOCS') then
+      Include(Result, vkpDocs);
+
+    if SameText(sda[i], 'GROUPS') then
+      Include(Result, vkpGroups);
+
+    if SameText(sda[i], 'NOTIFICATIONS') then
+      Include(Result, vkpNotifications);
+
+    if SameText(sda[i], 'STATS') then
+      Include(Result, vkpStats);
+
+    if SameText(sda[i], 'EMAIL') then
+      Include(Result, vkpEmail);
+
+    if SameText(sda[i], 'NOHTTPS') then
+      Include(Result, vkpNoHttps);
+  end;
+end;
+
+function IntToVkPermissions(const AInt: Integer): TVkPermissions;
+begin
+  Result := [];
+
+  if (AInt and VKAPI_PERMISSION_NOTIFY) <> 0 then
+    Include(Result, vkpNotify);
+
+  if (AInt and VKAPI_PERMISSION_FRIENDS) <> 0 then
+    Include(Result, vkpFriends);
+
+  if (AInt and VKAPI_PERMISSION_PHOTOS) <> 0 then
+    Include(Result, vkpPhotos);
+
+  if (AInt and VKAPI_PERMISSION_AUDIO) <> 0 then
+    Include(Result, vkpAudio);
+
+  if (AInt and VKAPI_PERMISSION_VIDEO) <> 0 then
+    Include(Result, vkpVideo);
+
+  if (AInt and VKAPI_PERMISSION_OFFERS) <> 0 then
+    Include(Result, vkpOffers);
+
+  if (AInt and VKAPI_PERMISSION_QUESTIONS) <> 0 then
+    Include(Result, vkpQuestions);
+
+  if (AInt and VKAPI_PERMISSION_PAGES) <> 0 then
+    Include(Result, vkpPages);
+
+  if (AInt and VKAPI_PERMISSION_LEFTMENULINK) <> 0 then
+    Include(Result, vkpLeftMenuLink);
+
+  if (AInt and VKAPI_PERMISSION_STATUS) <> 0 then
+    Include(Result, vkpStatus);
+
+  if (AInt and VKAPI_PERMISSION_NOTES) <> 0 then
+    Include(Result, vkpNotes);
+
+  if (AInt and VKAPI_PERMISSION_MESSAGES) <> 0 then
+    Include(Result, vkpMessages);
+
+  if (AInt and VKAPI_PERMISSION_WALL) <> 0 then
+    Include(Result, vkpWall);
+
+  if (AInt and VKAPI_PERMISSION_ADS) <> 0 then
+    Include(Result, vkpAds);
+
+  if (AInt and VKAPI_PERMISSION_OFFLINE) <> 0 then
+    Include(Result, vkpOffline);
+
+  if (AInt and VKAPI_PERMISSION_DOCS) <> 0 then
+    Include(Result, vkpDocs);
+
+  if (AInt and VKAPI_PERMISSION_GROUPS) <> 0 then
+    Include(Result, vkpGroups);
+
+  if (AInt and VKAPI_PERMISSION_NOTIFICATIONS) <> 0 then
+    Include(Result, vkpNotifications);
+
+  if (AInt and VKAPI_PERMISSION_STATS) <> 0 then
+    Include(Result, vkpStats);
+
+  if (AInt and VKAPI_PERMISSION_EMAIL) <> 0 then
+    Include(Result, vkpEmail);
+
+  // nohttps value is not defined
+//  if (AInt and VKAPI_PERMISSION_NOHTTPS) <> 0 then
+//    Include(Result, vkpNoHttps);
 end;
 
 end.

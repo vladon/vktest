@@ -20,6 +20,7 @@ type
     ePostText: TEdit;
     Label2: TLabel;
     bPostTextToGroup: TButton;
+    Memo1: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure btLoginClick(Sender: TObject);
     procedure btSetOfflineClick(Sender: TObject);
@@ -53,13 +54,14 @@ const
   KeysAccessToken = 'access_token';
 
 const
-  vkDefaultScope = 'notify,wall,status,wall,messages,stats,offline,photos';
+  vkDefaultScope = 'notify,friends,photos,audio,video,docs,notes,pages,status,' +
+  'wall,groups,messages,notifications,stats,ads,offline';
   vkDefaultDisplay = TVkDisplayType.dtPopup;
   vkDefaultVersion: TVkApiVersion = TVkApiVersion.av5_26;
 
 procedure TMainForm.bPostTextToGroupClick(Sender: TObject);
 begin
-  FVKApi.WallPost(StrToInt(eGroupId.Text), ePostText.Text);
+  Memo1.Lines.Add(FVKApi.WallPost(StrToInt(eGroupId.Text), ePostText.Text));
 end;
 
 procedure TMainForm.btLoginClick(Sender: TObject);
