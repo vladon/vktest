@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, IPPeerClient, REST.Client,
   REST.Authenticator.OAuth, Data.Bind.Components, Data.Bind.ObjectScope,
-  browserform;
+  browserform, VkApi;
 
 type
   TMainForm = class(TForm)
@@ -14,11 +14,12 @@ type
     eAppId: TEdit;
     eSecretKey: TEdit;
     eAccessToken: TEdit;
-    RESTClient1: TRESTClient;
-    RESTRequest1: TRESTRequest;
-    RESTResponse1: TRESTResponse;
-    OAuth2Authenticator1: TOAuth2Authenticator;
     btSetOffline: TButton;
+    eGroupId: TEdit;
+    Label1: TLabel;
+    ePostText: TEdit;
+    Label2: TLabel;
+    bPostTextToGroup: TButton;
     procedure FormCreate(Sender: TObject);
     procedure btLoginClick(Sender: TObject);
     procedure btSetOfflineClick(Sender: TObject);
@@ -27,6 +28,8 @@ type
     AppId: string;
     SecretKey: string;
     AccessToken: string;
+
+    FVKApi: TVkApi;
   public
     { Public declarations }
   end;
@@ -49,12 +52,12 @@ const
   KeysAccessToken = 'access_token';
 
 const
-  vkAuthUrlTemplate = 'https://oauth.vk.com/authorize?client_id=%s&scope=' +
-  '%s&redirect_uri=%s&display=%s&v=%s&response_type=token';
-  vkAuthEndpoint = 'https://oauth.vk.com/authorize';
+//  vkAuthUrlTemplate = 'https://oauth.vk.com/authorize?client_id=%s&scope=' +
+//  '%s&redirect_uri=%s&display=%s&v=%s&response_type=token';
+//  vkAuthEndpoint = 'https://oauth.vk.com/authorize';
 
   vkDefaultScope = 'notify,wall,status,wall,messages,stats,offline,photos';
-  vkDefaultRedirectUri = 'https://oauth.vk.com/blank.html';
+//  vkDefaultRedirectUri = 'https://oauth.vk.com/blank.html';
   vkDefaultDisplay = 'popup';
   vkDefaultVersion = '5.26';
 
@@ -66,22 +69,25 @@ var
   indexOfExpiresIn: Integer;
 
   KeysIniFile: TIniFile;
+
 begin
-  OAuth2Authenticator1.AccessToken := EmptyStr;
-  OAuth2Authenticator1.ClientID := Self.AppId;
-  OAuth2Authenticator1.ClientSecret := Self.SecretKey;
-  OAuth2Authenticator1.ResponseType := TOAuth2ResponseType.rtTOKEN;
-  OAuth2Authenticator1.Scope := vkDefaultScope;
-  OAuth2Authenticator1.AuthorizationEndpoint := vkAuthEndpoint;
-  OAuth2Authenticator1.RedirectionEndpoint := vkDefaultRedirectUri;
+  FVKApi.Scope := vkDefaultScope;
+
+//  OAuth2Authenticator1.AccessToken := EmptyStr;
+//  OAuth2Authenticator1.ClientID := Self.AppId;
+//  OAuth2Authenticator1.ClientSecret := Self.SecretKey;
+//  OAuth2Authenticator1.ResponseType := TOAuth2ResponseType.rtTOKEN;
+//  OAuth2Authenticator1.Scope := vkDefaultScope;
+
+//  OAuth2Authenticator1.AuthorizationEndpoint := vkAuthEndpoint;
+//  OAuth2Authenticator1.RedirectionEndpoint := vkDefaultRedirectUri;
 
 //  vkAuthUrl := Format(vkAuthUrlTemplate, [Self.AppId,
 //     vkDefaultScope, vkDefaultRedirectUri, vkDefaultDisplay,
 //     vkDefaultVersion]);
 
-  Clipboard.AsText := OAuth2Authenticator1.AuthorizationRequestURI;
 
-  WebBrowserForm.WebBrowser1.Navigate2(OAuth2Authenticator1.AuthorizationRequestURI);
+  WebBrowserForm.WebBrowser1.Navigate2(FVkApi.AuthorizationRequestURI);
   WebBrowserForm.ShowModal;
 
   vkReturnUrl := WebBrowserForm.WebBrowser1.LocationURL;
@@ -94,12 +100,12 @@ begin
   Self.eAccessToken.Text := accessToken;
   Self.AccessToken := accessToken;
 
-  OAuth2Authenticator1.AccessToken := accessToken;
+  FVKApi.AccessToken := accessToken;
 
   KeysIniFile := TIniFile.Create(ExtractFilePath(Application.ExeName) +
      KeysIniFileName);
   try
-    KeysIniFile.WriteString(KeysSection, KeysAccessToken, accessToken);
+    KeysIniFile.WriteString(KeysSection, KeysAccessToken, FVKApi.AccessToken);
   finally
     KeysIniFile.Free;
   end;
@@ -107,7 +113,7 @@ end;
 
 procedure TMainForm.btSetOfflineClick(Sender: TObject);
 begin
-  RESTRequest1.Resource := 'account.setOffline';
+//  RESTRequest1.Resource := 'account.setOffline';
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -126,11 +132,7 @@ begin
     Self.eSecretKey.Text := Self.SecretKey;
     Self.eAccessToken.Text := Self.AccessToken;
 
-    OAuth2Authenticator1.AccessToken := Self.AccessToken;
-    OAuth2Authenticator1.ClientID := Self.AppId;
-    OAuth2Authenticator1.ClientSecret := Self.SecretKey;
-    OAuth2Authenticator1.ResponseType := TOAuth2ResponseType.rtTOKEN;
-    OAuth2Authenticator1.AuthorizationEndpoint := vkAuthEndpoint;
+    FVKApi := TVkApi.Create(Self.AppId, Self.SecretKey, Self.AccessToken);
   finally
     KeysIniFile.Free;
   end;

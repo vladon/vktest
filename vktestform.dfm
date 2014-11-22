@@ -14,6 +14,20 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 8
+    Top = 184
+    Width = 46
+    Height = 13
+    Caption = 'Group Id:'
+  end
+  object Label2: TLabel
+    Left = 8
+    Top = 211
+    Width = 50
+    Height = 13
+    Caption = 'Post Text:'
+  end
   object btLogin: TButton
     Left = 8
     Top = 35
@@ -46,36 +60,33 @@ object MainForm: TMainForm
   end
   object btSetOffline: TButton
     Left = 8
-    Top = 136
+    Top = 112
     Width = 75
     Height = 25
     Caption = 'Set Offline'
     TabOrder = 4
     OnClick = btSetOfflineClick
   end
-  object RESTClient1: TRESTClient
-    Authenticator = OAuth2Authenticator1
-    Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-    BaseURL = 'https://api.vk.com/method'
-    Params = <>
-    HandleRedirects = True
-    Left = 576
-    Top = 8
+  object eGroupId: TEdit
+    Left = 60
+    Top = 181
+    Width = 121
+    Height = 21
+    TabOrder = 5
   end
-  object RESTRequest1: TRESTRequest
-    Client = RESTClient1
-    Params = <>
-    Response = RESTResponse1
-    SynchronizedEvents = False
-    Left = 656
-    Top = 8
+  object ePostText: TEdit
+    Left = 60
+    Top = 208
+    Width = 121
+    Height = 21
+    TabOrder = 6
   end
-  object RESTResponse1: TRESTResponse
-    Left = 744
-    Top = 8
-  end
-  object OAuth2Authenticator1: TOAuth2Authenticator
-    Left = 472
-    Top = 8
+  object bPostTextToGroup: TButton
+    Left = 8
+    Top = 235
+    Width = 173
+    Height = 25
+    Caption = 'Post Text To Group'
+    TabOrder = 7
   end
 end
