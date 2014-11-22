@@ -72,11 +72,19 @@ type
       function GetScope: string;
       procedure SetScope(const Value: string);
 
+      function GetDisplay: TVkDisplayType;
+      procedure SetDisplay(const Value: TVkDisplayType);
+
+      function GetApiVersion: TVkApiVersion;
+      procedure SetApiVersion(const Value: TVkApiVersion);
+
       function GetAuthorizationRequestURI: string;
 
       procedure SetAccessToken(const Value: string);
     public
       property Scope: string read GetScope write SetScope;
+      property Display: TVkDisplayType read GetDisplay write SetDisplay;
+      property ApiVersion: TVkApiVersion read GetApiVersion write SetApiVersion;
       property AuthorizationRequestURI: string read GetAuthorizationRequestURI;
       property AccessToken: string read FAccessToken write SetAccessToken;
 
@@ -143,12 +151,22 @@ begin
   inherited Destroy;
 end;
 
+function TVkApi.GetApiVersion: TVkApiVersion;
+begin
+  Result := FVkAuthenticator.ApiVersion;
+end;
+
 function TVkApi.GetAuthorizationRequestURI: string;
 begin
   if FVkAuthenticator <> nil then
     Result := FVkAuthenticator.AuthorizationRequestURI
   else
     Result := '';
+end;
+
+function TVkApi.GetDisplay: TVkDisplayType;
+begin
+  Result := FVkAuthenticator.Display;
 end;
 
 function TVkApi.GetScope: string;
@@ -164,6 +182,18 @@ begin
   FAccessToken := Value;
   if FVkAuthenticator <> nil then
     FVkAuthenticator.AccessToken := Value;
+end;
+
+procedure TVkApi.SetApiVersion(const Value: TVkApiVersion);
+begin
+  if (Value <> FVkAuthenticator.ApiVersion) then
+    FVkAuthenticator.ApiVersion := Value;
+end;
+
+procedure TVkApi.SetDisplay(const Value: TVkDisplayType);
+begin
+  if (Value <> FVkAuthenticator.Display) then
+    FVkAuthenticator.Display := Value;
 end;
 
 procedure TVkApi.SetScope(const Value: string);

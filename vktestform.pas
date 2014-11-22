@@ -53,14 +53,9 @@ const
   KeysAccessToken = 'access_token';
 
 const
-//  vkAuthUrlTemplate = 'https://oauth.vk.com/authorize?client_id=%s&scope=' +
-//  '%s&redirect_uri=%s&display=%s&v=%s&response_type=token';
-//  vkAuthEndpoint = 'https://oauth.vk.com/authorize';
-
   vkDefaultScope = 'notify,wall,status,wall,messages,stats,offline,photos';
-//  vkDefaultRedirectUri = 'https://oauth.vk.com/blank.html';
-  vkDefaultDisplay = 'popup';
-  vkDefaultVersion = '5.26';
+  vkDefaultDisplay = TVkDisplayType.dtPopup;
+  vkDefaultVersion: TVkApiVersion = TVkApiVersion.av5_26;
 
 procedure TMainForm.bPostTextToGroupClick(Sender: TObject);
 begin
@@ -78,20 +73,8 @@ var
 
 begin
   FVKApi.Scope := vkDefaultScope;
-
-//  OAuth2Authenticator1.AccessToken := EmptyStr;
-//  OAuth2Authenticator1.ClientID := Self.AppId;
-//  OAuth2Authenticator1.ClientSecret := Self.SecretKey;
-//  OAuth2Authenticator1.ResponseType := TOAuth2ResponseType.rtTOKEN;
-//  OAuth2Authenticator1.Scope := vkDefaultScope;
-
-//  OAuth2Authenticator1.AuthorizationEndpoint := vkAuthEndpoint;
-//  OAuth2Authenticator1.RedirectionEndpoint := vkDefaultRedirectUri;
-
-//  vkAuthUrl := Format(vkAuthUrlTemplate, [Self.AppId,
-//     vkDefaultScope, vkDefaultRedirectUri, vkDefaultDisplay,
-//     vkDefaultVersion]);
-
+  FVKApi.Display := vkDefaultDisplay;
+  FVKApi.ApiVersion := vkDefaultVersion;
 
   WebBrowserForm.WebBrowser1.Navigate2(FVkApi.AuthorizationRequestURI);
   WebBrowserForm.ShowModal;
