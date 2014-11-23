@@ -232,8 +232,6 @@ begin
   FRESTRequest.HandleRedirects := True;
   FRESTRequest.Response := FRESTResponse;
   FRESTRequest.Timeout := VKAPI_TIMEOUT;
-
-  Self.AccountGetAppPermissions();
 end;
 
 destructor TVkApi.Destroy;
