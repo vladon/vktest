@@ -4,7 +4,7 @@ uses
   Vcl.Forms,
   vktestform in 'vktestform.pas' {MainForm},
   browserform in 'browserform.pas' {WebBrowserForm},
-  VkApi in 'VkApi.pas';
+  VkApi in '..\vkapi\VkApi.pas';
 
 {$R *.res}
 
