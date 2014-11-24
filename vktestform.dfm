@@ -73,6 +73,7 @@ object MainForm: TMainForm
     Width = 121
     Height = 21
     TabOrder = 5
+    Text = '81144272'
   end
   object ePostText: TEdit
     Left = 60
@@ -93,8 +94,8 @@ object MainForm: TMainForm
   object Memo1: TMemo
     Left = 187
     Top = 181
-    Width = 640
-    Height = 284
+    Width = 318
+    Height = 348
     TabOrder = 8
   end
   object Button1: TButton
@@ -105,5 +106,14 @@ object MainForm: TMainForm
     Caption = 'Button1'
     TabOrder = 9
     OnClick = Button1Click
+  end
+  object bGetWallUploadServer: TButton
+    Left = 511
+    Top = 179
+    Width = 290
+    Height = 25
+    Caption = 'bGetWallUploadServer'
+    TabOrder = 10
+    OnClick = bGetWallUploadServerClick
   end
 end

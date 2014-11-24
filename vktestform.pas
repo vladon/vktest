@@ -22,11 +22,13 @@ type
     bPostTextToGroup: TButton;
     Memo1: TMemo;
     Button1: TButton;
+    bGetWallUploadServer: TButton;
     procedure FormCreate(Sender: TObject);
     procedure btLoginClick(Sender: TObject);
     procedure btSetOfflineClick(Sender: TObject);
     procedure bPostTextToGroupClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure bGetWallUploadServerClick(Sender: TObject);
   private
     { Private declarations }
     AppId: string;
@@ -60,6 +62,20 @@ const
   'wall,groups,messages,notifications,stats,ads,offline';
   vkDefaultDisplay = TVkDisplayType.dtPopup;
   vkDefaultVersion: TVkApiVersion = TVkApiVersion.av5_26;
+
+procedure TMainForm.bGetWallUploadServerClick(Sender: TObject);
+var
+  wus: TVkPhotosGetWallUploadServerResponse;
+begin
+  wus := FVKApi.PhotosGetWallUploadServer(StrToInt(
+     eGroupId.Text));
+
+  Memo1.Lines.Add(wus.UploadUrl);
+  Memo1.Lines.Add(IntToStr(wus.AlbumId));
+  Memo1.Lines.Add(IntToStr(wus.UserId));
+
+
+end;
 
 procedure TMainForm.bPostTextToGroupClick(Sender: TObject);
 begin
