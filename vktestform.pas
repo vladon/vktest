@@ -53,7 +53,7 @@ implementation
 
 uses
   System.IniFiles, System.DateUtils, Vcl.Clipbrd, IdHTTP, IdMultipartFormData,
-  SynCommons;
+  SynCommons, IdSSLOpenSSL;
 
 const
   KeysIniFileName = 'keys.ini';
@@ -135,11 +135,16 @@ end;
 procedure TMainForm.bUploadFileClick(Sender: TObject);
 var
   IdHTTP: TIdHTTP;
+  IdSSL: TIdSSLIOHandlerSocketOpenSSL;
+  SSL: Boolean;
   IdMFD: TIdMultiPartFormDataStream;
   Response: string;
   v: Variant;
 begin
   IdHTTP := TIdHTTP.Create();
+
+  IdSSL := nil;
+  SSL := False;
 
   try
     try
@@ -147,12 +152,18 @@ begin
       IdMFD.AddFile('photo', ExtractFilePath(Application.ExeName) +
          eFilename.Text);
 
-//      IdHTTP.Request.ContentType := 'multipart/form-data';
+      if string(eUploadUrl.Text).Contains('https://') then
+      begin
+        IdSSL := TIdSSLIOHandlerSocketOpenSSL.Create();
+        IdHTTP.IOHandler := IdSSL;
+        SSL := True;
+      end;
+
       Response := IdHTTP.Post(eUploadUrl.Text, IdMFD);
       Memo1.Lines.Add('Response:');
       Memo1.Lines.Add(Response);
 
-      v := _JsonFast(Response);
+//      v := _JsonFast(RawUTF8(Response));
 
     except
       on E: Exception do
@@ -162,6 +173,10 @@ begin
       end;
     end;
   finally
+    if SSL then
+    begin
+      IdSSL.Free;
+    end;
     IdHTTP.Free;
   end;
 end;
