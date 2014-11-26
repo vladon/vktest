@@ -116,4 +116,29 @@ object MainForm: TMainForm
     TabOrder = 10
     OnClick = bGetWallUploadServerClick
   end
+  object bUploadFile: TButton
+    Left = 511
+    Top = 264
+    Width = 290
+    Height = 25
+    Caption = 'bUploadFile'
+    TabOrder = 11
+    OnClick = bUploadFileClick
+  end
+  object eUploadUrl: TEdit
+    Left = 511
+    Top = 210
+    Width = 290
+    Height = 21
+    TabOrder = 12
+    Text = 'eUploadUrl'
+  end
+  object eFilename: TEdit
+    Left = 511
+    Top = 237
+    Width = 290
+    Height = 21
+    TabOrder = 13
+    Text = 'testimage.jpg'
+  end
 end

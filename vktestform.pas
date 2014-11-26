@@ -23,12 +23,16 @@ type
     Memo1: TMemo;
     Button1: TButton;
     bGetWallUploadServer: TButton;
+    bUploadFile: TButton;
+    eUploadUrl: TEdit;
+    eFilename: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure btLoginClick(Sender: TObject);
     procedure btSetOfflineClick(Sender: TObject);
     procedure bPostTextToGroupClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure bGetWallUploadServerClick(Sender: TObject);
+    procedure bUploadFileClick(Sender: TObject);
   private
     { Private declarations }
     AppId: string;
@@ -48,7 +52,8 @@ implementation
 {$R *.dfm}
 
 uses
-  System.IniFiles, System.DateUtils, Vcl.Clipbrd;
+  System.IniFiles, System.DateUtils, Vcl.Clipbrd, IdHTTP, IdMultipartFormData,
+  SynCommons;
 
 const
   KeysIniFileName = 'keys.ini';
@@ -73,6 +78,8 @@ begin
   Memo1.Lines.Add(wus.UploadUrl);
   Memo1.Lines.Add(IntToStr(wus.AlbumId));
   Memo1.Lines.Add(IntToStr(wus.UserId));
+
+  eUploadUrl.Text := wus.UploadUrl;
 
 
 end;
@@ -123,6 +130,40 @@ end;
 procedure TMainForm.btSetOfflineClick(Sender: TObject);
 begin
 //  RESTRequest1.Resource := 'account.setOffline';
+end;
+
+procedure TMainForm.bUploadFileClick(Sender: TObject);
+var
+  IdHTTP: TIdHTTP;
+  IdMFD: TIdMultiPartFormDataStream;
+  Response: string;
+  v: Variant;
+begin
+  IdHTTP := TIdHTTP.Create();
+
+  try
+    try
+      IdMFD := TIdMultiPartFormDataStream.Create;
+      IdMFD.AddFile('photo', ExtractFilePath(Application.ExeName) +
+         eFilename.Text);
+
+//      IdHTTP.Request.ContentType := 'multipart/form-data';
+      Response := IdHTTP.Post(eUploadUrl.Text, IdMFD);
+      Memo1.Lines.Add('Response:');
+      Memo1.Lines.Add(Response);
+
+      v := _JsonFast(Response);
+
+    except
+      on E: Exception do
+      begin
+        Memo1.Lines.Add(E.ClassName);
+        Memo1.Lines.Add(E.Message);
+      end;
+    end;
+  finally
+    IdHTTP.Free;
+  end;
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
