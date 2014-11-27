@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, IPPeerClient, REST.Client,
   REST.Authenticator.OAuth, Data.Bind.Components, Data.Bind.ObjectScope,
-  browserform, VkApi;
+  browserform, VkApi, VkApi.Photo, VkApi.Authenticator, VkApi.Constants,
+  VkApi.Types, VkApi.Utils;
 
 type
   TMainForm = class(TForm)
@@ -26,6 +27,16 @@ type
     bUploadFile: TButton;
     eUploadUrl: TEdit;
     eFilename: TEdit;
+    bSaveWallPhoto: TButton;
+    eUserId: TEdit;
+    ePhoto: TEdit;
+    eServer: TEdit;
+    eHash: TEdit;
+    eAlbumId: TEdit;
+    eMessage: TEdit;
+    bWallPost: TButton;
+    ePhotoId: TEdit;
+    eOwnerId: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure btLoginClick(Sender: TObject);
     procedure btSetOfflineClick(Sender: TObject);
@@ -33,6 +44,8 @@ type
     procedure Button1Click(Sender: TObject);
     procedure bGetWallUploadServerClick(Sender: TObject);
     procedure bUploadFileClick(Sender: TObject);
+    procedure bSaveWallPhotoClick(Sender: TObject);
+    procedure bWallPostClick(Sender: TObject);
   private
     { Private declarations }
     AppId: string;
@@ -53,7 +66,7 @@ implementation
 
 uses
   System.IniFiles, System.DateUtils, Vcl.Clipbrd, IdHTTP, IdMultipartFormData,
-  SynCommons, IdSSLOpenSSL;
+  SynCommons, IdSSLOpenSSL, superobject;
 
 const
   KeysIniFileName = 'keys.ini';
@@ -75,18 +88,32 @@ begin
   wus := FVKApi.PhotosGetWallUploadServer(StrToInt(
      eGroupId.Text));
 
-  Memo1.Lines.Add(wus.UploadUrl);
-  Memo1.Lines.Add(IntToStr(wus.AlbumId));
-  Memo1.Lines.Add(IntToStr(wus.UserId));
-
   eUploadUrl.Text := wus.UploadUrl;
-
-
+  eUserId.Text := IntToStr(wus.UserId);
+  eAlbumId.Text := IntToStr(wus.AlbumId);
 end;
 
 procedure TMainForm.bPostTextToGroupClick(Sender: TObject);
 begin
   Memo1.Lines.Add(FVKApi.WallPost(StrToInt(eGroupId.Text), ePostText.Text));
+end;
+
+procedure TMainForm.bSaveWallPhotoClick(Sender: TObject);
+var
+  swpp: TVkSaveWallPhotoParams;
+  p: TVkPhoto;
+begin
+  swpp.UserId := -1;
+  swpp.GroupId := StrToInt(eGroupId.Text);
+  swpp.Photo := ePhoto.Text;
+  swpp.Server := StrToInt(eServer.Text);
+  swpp.Hash := eHash.Text;
+
+  p := FVKApi.PhotosSaveWallPhoto(swpp);
+  Memo1.Lines.Add(p.Text);
+
+  eOwnerId.Text := IntToStr(p.OwnerId);
+  ePhotoId.Text := IntToStr(p.Id);
 end;
 
 procedure TMainForm.btLoginClick(Sender: TObject);
@@ -163,7 +190,15 @@ begin
       Memo1.Lines.Add('Response:');
       Memo1.Lines.Add(Response);
 
-//      v := _JsonFast(RawUTF8(Response));
+      v := _JsonFast(RawUTF8(Response));
+
+      Memo1.Lines.Add('1');
+      eServer.Text := v.server;
+      Memo1.Lines.Add('2');
+      ePhoto.Text := v.photo;
+      Memo1.Lines.Add('3');
+      eHash.Text := v.hash;
+      Memo1.Lines.Add('4');
 
     except
       on E: Exception do
@@ -184,6 +219,12 @@ end;
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
   Memo1.Lines.Add(IntToStr(FVKApi.AccountGetAppPermissions()));
+end;
+
+procedure TMainForm.bWallPostClick(Sender: TObject);
+begin
+  FVKApi.WallPostPhoto(GroupIdToOwnerId(StrToInt(eGroupId.Text)), 'photo' +
+     eOwnerId.Text + '_' + ePhotoId.Text, eMessage.Text);
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);

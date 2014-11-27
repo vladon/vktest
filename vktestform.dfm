@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   Caption = 'Main Form'
   ClientHeight = 552
-  ClientWidth = 835
+  ClientWidth = 1050
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -140,5 +140,87 @@ object MainForm: TMainForm
     Height = 21
     TabOrder = 13
     Text = 'testimage.jpg'
+  end
+  object bSaveWallPhoto: TButton
+    Left = 511
+    Top = 428
+    Width = 290
+    Height = 25
+    Caption = 'bSaveWallPhoto'
+    TabOrder = 14
+    OnClick = bSaveWallPhotoClick
+  end
+  object eUserId: TEdit
+    Left = 511
+    Top = 320
+    Width = 121
+    Height = 21
+    TabOrder = 15
+    Text = 'eUserId'
+  end
+  object ePhoto: TEdit
+    Left = 511
+    Top = 347
+    Width = 121
+    Height = 21
+    TabOrder = 16
+    Text = 'ePhoto'
+  end
+  object eServer: TEdit
+    Left = 511
+    Top = 374
+    Width = 121
+    Height = 21
+    TabOrder = 17
+    Text = 'eServer'
+  end
+  object eHash: TEdit
+    Left = 511
+    Top = 401
+    Width = 121
+    Height = 21
+    TabOrder = 18
+    Text = 'eHash'
+  end
+  object eAlbumId: TEdit
+    Left = 511
+    Top = 293
+    Width = 121
+    Height = 21
+    TabOrder = 19
+    Text = 'eAlbumId'
+  end
+  object eMessage: TEdit
+    Left = 839
+    Top = 401
+    Width = 121
+    Height = 21
+    TabOrder = 20
+    Text = 'eMessage'
+  end
+  object bWallPost: TButton
+    Left = 839
+    Top = 428
+    Width = 130
+    Height = 25
+    Caption = 'bWallPost'
+    TabOrder = 21
+    OnClick = bWallPostClick
+  end
+  object ePhotoId: TEdit
+    Left = 839
+    Top = 374
+    Width = 121
+    Height = 21
+    TabOrder = 22
+    Text = 'ePhotoId'
+  end
+  object eOwnerId: TEdit
+    Left = 839
+    Top = 347
+    Width = 121
+    Height = 21
+    TabOrder = 23
+    Text = 'eOwnerId'
   end
 end

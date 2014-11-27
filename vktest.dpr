@@ -4,7 +4,12 @@ uses
   Vcl.Forms,
   vktestform in 'vktestform.pas' {MainForm},
   browserform in 'browserform.pas' {WebBrowserForm},
-  VkApi in '..\vkapi\VkApi.pas';
+  VkApi in '..\vkapi\VkApi.pas',
+  VkApi.Photo in '..\vkapi\VkApi.Photo.pas',
+  VkApi.Utils in '..\vkapi\VkApi.Utils.pas',
+  VkApi.Authenticator in '..\vkapi\VkApi.Authenticator.pas',
+  VkApi.Types in '..\vkapi\VkApi.Types.pas',
+  VkApi.Constants in '..\vkapi\VkApi.Constants.pas';
 
 {$R *.res}
 
