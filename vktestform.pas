@@ -66,7 +66,7 @@ implementation
 
 uses
   System.IniFiles, System.DateUtils, Vcl.Clipbrd, IdHTTP, IdMultipartFormData,
-  SynCommons, IdSSLOpenSSL, superobject;
+  SynCommons, IdSSLOpenSSL;
 
 const
   KeysIniFileName = 'keys.ini';
@@ -79,7 +79,7 @@ const
   vkDefaultScope = 'notify,friends,photos,audio,video,docs,notes,pages,status,' +
   'wall,groups,messages,notifications,stats,ads,offline';
   vkDefaultDisplay = TVkDisplayType.dtPopup;
-  vkDefaultVersion: TVkApiVersion = TVkApiVersion.av5_26;
+  vkDefaultVersion: TVkApiVersion = TVkApiVersion.av5_27;
 
 procedure TMainForm.bGetWallUploadServerClick(Sender: TObject);
 var
